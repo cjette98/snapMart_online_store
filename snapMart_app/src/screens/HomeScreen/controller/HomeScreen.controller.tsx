@@ -2,8 +2,8 @@ import {useEffect, useState} from 'react'
 import ProductData from '../../../constant/items.json'
 import { useNavigation } from '@react-navigation/native'
 import { useAppDispatch } from "../../../store/app";
-import { addToCart } from '../../../store/cartSlice';
-
+import { addToCart,locaStorageCart } from '../../../store/cartSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const HomeScreenController = () => {
  
     const navigation = useNavigation()
@@ -59,6 +59,23 @@ const HomeScreenController = () => {
 
     setFilteredItems(filteredItemsCopy);
   };
+
+  useEffect(() => {
+    const getCartItems = async () => {
+      try {
+        const cartItems = await AsyncStorage.getItem('cartItems');
+        if (cartItems !== null) {
+          const parsedCartItems = JSON.parse(cartItems);
+          dispatch(locaStorageCart(parsedCartItems));
+        }
+      } catch (error) {
+        console.log('Error retrieving cart items from AsyncStorage:', error);
+      }
+    };
+
+    getCartItems();
+  }, [])
+  
   
   return  {
     filteredItems,
