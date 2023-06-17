@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Image, FlatList, TextInput, ScrollView, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Image, FlatList, TextInput, ScrollView, Pressable, Alert } from 'react-native'
 import React from 'react'
 import HomeScreenController from '../controller/HomeScreen.controller'
 
@@ -6,6 +6,16 @@ const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 40;
 import { useAppCart } from '../../../store/app';
 
+interface Item {
+    item : {
+        id : string
+        productName : string
+        description : string
+        unitPrice : string
+        category : string,
+        imageUrl : string
+    }
+}
 
 const HomeScreen = () => {
     const CartData =  useAppCart()
@@ -14,7 +24,8 @@ const HomeScreen = () => {
         ProductCategory,
         setSearchProduct,
         searchProduct,
-        gotoCartScreen
+        gotoCartScreen,
+        addItemToCart
     } = HomeScreenController()
 
     const renderItem = ({ item }: Item) => (
@@ -23,7 +34,9 @@ const HomeScreen = () => {
             <Text style={styles.productlbl}>{item.productName}</Text>
             <Text style={styles.categoryLbl}>{item.category.toUpperCase()}</Text>
             <Text style={styles.unitPriceLbl}>{item.unitPrice}</Text>
-            <Pressable style={styles.cartBtn}>
+            <Pressable 
+            onPress={() => addItemToCart(item)}
+            style={styles.cartBtn}>
                 <Text style={styles.cartBtnLbl}>Add to cart</Text>
             </Pressable>
         </View>
@@ -39,7 +52,7 @@ const HomeScreen = () => {
           style={styles.cartBtn}
             onPress={gotoCartScreen}
             >
-                <Text>View cart {CartData.length}</Text>
+                <Text>View cart : {CartData.length}</Text>
             </Pressable>
           </View>
             <View>
@@ -56,9 +69,9 @@ const HomeScreen = () => {
                 <ScrollView
                     horizontal
                 >
-                    {ProductCategory.map((cat) => {
+                    {ProductCategory.map((cat, index) => {
                         return (
-                            <View style={[styles.categorySelection, {backgroundColor: '#E8E8E8'}]}>
+                            <View key={index} style={[styles.categorySelection, {backgroundColor: '#E8E8E8'}]}>
                                 <Text>{cat}</Text>
                             </View>
                         )

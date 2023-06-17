@@ -1,11 +1,13 @@
 import { createSlice,PayloadAction } from '@reduxjs/toolkit';
 
 interface CartItem {
-    id: number;
-    quantity: number;
-    price : number,
-    imageUrl : string,
-    categories : string
+    id : string
+    productName : string
+    description : string
+    unitPrice : string
+    category : string,
+    imageUrl : string
+    quantity : number
   }
 
   const cartSlice = createSlice({
@@ -21,7 +23,7 @@ interface CartItem {
           state.push(item);
         }
       },
-      updateQuantity: (state, action: PayloadAction<{ itemId: number; quantity: number }>) => {
+      updateQuantity: (state, action: PayloadAction<{ itemId: string; quantity: number }>) => {
         const { itemId, quantity } = action.payload;
         const item = state.find((cartItem) => cartItem.id === itemId);
         if (item) {
@@ -31,7 +33,7 @@ interface CartItem {
           }
         }
       },
-      removeFromCart: (state, action: PayloadAction<number>) => {
+      removeFromCart: (state, action: PayloadAction<string>) => {
         const itemId = action.payload;
         return state.filter((cartItem) => cartItem.id !== itemId);
       },
