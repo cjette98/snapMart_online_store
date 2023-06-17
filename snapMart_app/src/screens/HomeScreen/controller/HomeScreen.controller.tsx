@@ -5,11 +5,14 @@ import { useAppDispatch } from "../../../store/app";
 import { addToCart } from '../../../store/cartSlice';
 
 const HomeScreenController = () => {
-
+ 
     const navigation = useNavigation()
     const ParseCategory = ProductData.map(({category}) => category)
     const ProductCategory= [...new Set(ParseCategory)];
-    const [searchProduct, setSearchProduct] = useState('')
+    const [filteredItems, setFilteredItems] = useState(ProductData);
+    const [searchProductName, setSearchProductName] = useState('')
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [isAscSortByPrice, setSortByPrice] = useState(true);
 
     const dispatch = useAppDispatch()
     
@@ -18,13 +21,56 @@ const HomeScreenController = () => {
       const newItem = {...item, quantity : 1}
        dispatch(addToCart(newItem));
   }
+
+  const toggleCategory = (categoryId : string) => {
+    const isSelected = selectedCategories.includes(categoryId);
+    if (isSelected) {
+      const updatedCategories = selectedCategories.filter((id) => id !== categoryId);
+      setSelectedCategories(updatedCategories);
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
+
+  useEffect(() => {
+    filterAndSortItems();
+  }, [searchProductName, selectedCategories, isAscSortByPrice]);
+
+  const filterAndSortItems = () => {
+    let filteredItemsCopy = [...ProductData];
+
+    if (searchProductName) {
+      filteredItemsCopy = filteredItemsCopy.filter((item) =>
+        item.productName.toLowerCase().includes(searchProductName.toLowerCase())
+      );
+    }
+
+    if (selectedCategories.length > 0) {
+      filteredItemsCopy = filteredItemsCopy.filter((item) =>
+        selectedCategories.includes(item.category)
+      );
+    }
+
+    if (isAscSortByPrice) {
+      filteredItemsCopy.sort((a, b) => a.unitPrice - b.unitPrice);
+    } else if(!isAscSortByPrice) {
+      filteredItemsCopy.sort((a, b) => b.unitPrice - a.unitPrice);
+    }
+
+    setFilteredItems(filteredItemsCopy);
+  };
+  
   return  {
-    ProductData,
+    filteredItems,
     ProductCategory,
-    searchProduct,
-    setSearchProduct,
+    searchProductName,
+    setSearchProductName,
     gotoCartScreen,
-    addItemToCart
+    addItemToCart,
+    isAscSortByPrice,
+    setSortByPrice,
+    toggleCategory,
+    selectedCategories
   }
 }
 
