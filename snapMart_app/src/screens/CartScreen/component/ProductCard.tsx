@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
 import React from 'react'
-
+import {addCommasToNumber} from '../../../utils/convertToAmount'
 interface Item {
   data: {
     id: String,
@@ -35,7 +35,7 @@ const ProductCard = ({ data, incDecQty, removeItem }: Item) => {
         <View>
           <Text style={styles.productLbl}>{data.productName}</Text>
           <Text style={styles.catLbl}>{data.category.toUpperCase()}</Text>
-          <Text style={styles.priceLbl}>{data.unitPrice}</Text>
+          <Text style={styles.priceLbl}>{addCommasToNumber(Number(data.unitPrice))}</Text>
         </View>
       </View>
 
@@ -54,7 +54,7 @@ const ProductCard = ({ data, incDecQty, removeItem }: Item) => {
             <Text style={styles.btnlbl}> + </Text>
           </Pressable>
         </View>
-        <Text style={styles.totalPerItem}>Total: {(data.unitPrice * data.quantity).toFixed(2)}</Text>
+        <Text style={styles.totalPerItem}>Total: {addCommasToNumber(Number(data.unitPrice * data.quantity))}</Text>
       </View>
 
     </View>

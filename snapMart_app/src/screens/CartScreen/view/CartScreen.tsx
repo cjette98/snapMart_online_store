@@ -3,6 +3,7 @@ import React from 'react'
 import ProductCard from '../component/ProductCard'
 import { useAppCart } from '../../../store/app'
 import CartScreenController from '../controller/CartScreen.controller'
+import {addCommasToNumber} from '../../../utils/convertToAmount'
 const CartScreen = () => {
 
   const cartData = useAppCart()
@@ -44,7 +45,7 @@ const CartScreen = () => {
         </View>
       </View>
       <View style={styles.footerContainer}>
-        <Text style={styles.totalAmount}>Total Amount: ₱ {totalAmount.toFixed(2)}</Text>
+        <Text style={styles.totalAmount}>Total Amount: ₱ {addCommasToNumber(Number(totalAmount.toFixed(2)))}</Text>
         <Pressable
           disabled={totalAmount === 0 ? true : false}
           style={styles.checkoutBtn}
