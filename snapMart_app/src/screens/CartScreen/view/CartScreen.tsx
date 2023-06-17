@@ -9,7 +9,9 @@ const CartScreen = () => {
   const {
     updateCartItemQuantity,
     removeCartItem,
-    removeAllItemsInCart
+    removeAllItemsInCart,
+    totalAmount,
+    checkoutCta
   } = CartScreenController()
 
 
@@ -23,6 +25,7 @@ const CartScreen = () => {
     )
   }
   return (
+    <>
     <View style={styles.container}>
       <View style={styles.cartContainer}>
         <Text style={styles.cartLbl}>My Cart</Text>
@@ -40,6 +43,16 @@ const CartScreen = () => {
         />
       </View>
     </View>
+      <View style={styles.footerContainer}>
+        <Text style={styles.totalAmount}>Total Amount: ₱ {totalAmount.toFixed(2)}</Text>
+        <Pressable
+        style={styles.checkoutBtn}
+        onPress={checkoutCta}
+        >
+          <Text style={styles.checkoutBtnLbl}>Checkout</Text>
+        </Pressable>
+      </View>
+      </>
   )
 }
 
@@ -60,5 +73,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
 
+  },
+  checkoutBtn :{
+    marginTop:10,
+    padding:10, 
+    backgroundColor: 'green',
+    borderRadius : 5,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  checkoutBtnLbl : {
+    fontSize:18,
+    color :'#ffff',
+    fontWeight: 'bold'
+  },
+  footerContainer :{
+    
+      bottom: 0,
+      position:'absolute',
+      width:'100%',
+      backgroundColor:'#fff',
+      padding:20
+    
+  },
+  totalAmount : {
+    fontSize: 20,
+    fontWeight:'bold'
   }
 })

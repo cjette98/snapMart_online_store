@@ -4,8 +4,8 @@ interface CartItem {
     id : string
     productName : string
     description : string
-    unitPrice : string
-    category : string,
+    unitPrice : number
+    category : string
     imageUrl : string
     quantity : number
   }
