@@ -4,10 +4,11 @@ import HomeScreenController from '../controller/HomeScreen.controller'
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 40;
-
+import { useAppCart } from '../../../store/app';
 
 
 const HomeScreen = () => {
+    const CartData =  useAppCart()
     const {
         ProductData,
         ProductCategory,
@@ -31,11 +32,14 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
           <View style={styles.viewCart}>
+            <View>
+                <Text style={styles.greetings}>Good Day, Jette</Text>
+            </View>
           <Pressable
           style={styles.cartBtn}
             onPress={gotoCartScreen}
             >
-                <Text>View cart</Text>
+                <Text>View cart {CartData.length}</Text>
             </Pressable>
           </View>
             <View>
@@ -101,8 +105,14 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#ffff'
     },
+    greetings :{ 
+        fontWeight:'bold',
+        fontSize:20
+    },
     viewCart :{
-        alignItems:'flex-end'
+        flexDirection:'row',
+        alignItems:'center',
+         justifyContent:'space-between'
     },
     categorySelection: {
         margin: 5,
