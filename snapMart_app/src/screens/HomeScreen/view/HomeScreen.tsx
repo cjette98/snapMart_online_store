@@ -1,31 +1,36 @@
-import { StyleSheet, Text, View, Dimensions, Image, FlatList, TextInput, ScrollView, Pressable, Alert } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, Image, FlatList, TextInput, ScrollView, Pressable, } from 'react-native'
 import React from 'react'
 import HomeScreenController from '../controller/HomeScreen.controller'
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 2 - 40;
 import { useAppCart } from '../../../store/app';
+import { addCommasToNumber } from '../../../utils/convertToAmount'
 
 interface Item {
-    item : {
-        id : string
-        productName : string
-        description : string
-        unitPrice : string
-        category : string,
-        imageUrl : string
+    item: {
+        id: string
+        productName: string
+        description: string
+        unitPrice: string
+        category: string,
+        imageUrl: string
     }
 }
 
 const HomeScreen = () => {
-    const CartData =  useAppCart()
+    const CartData = useAppCart()
     const {
-        ProductData,
+        filteredItems,
         ProductCategory,
-        setSearchProduct,
-        searchProduct,
+        searchProductName,
+        setSearchProductName,
         gotoCartScreen,
-        addItemToCart
+        addItemToCart,
+        isAscSortByPrice,
+        setSortByPrice,
+        selectedCategories,
+        toggleCategory
     } = HomeScreenController()
 
     const renderItem = ({ item }: Item) => (
@@ -33,10 +38,10 @@ const HomeScreen = () => {
             <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
             <Text style={styles.productlbl}>{item.productName}</Text>
             <Text style={styles.categoryLbl}>{item.category.toUpperCase()}</Text>
-            <Text style={styles.unitPriceLbl}>{item.unitPrice}</Text>
-            <Pressable 
-            onPress={() => addItemToCart(item)}
-            style={styles.cartBtn}>
+            <Text style={styles.unitPriceLbl}>{addCommasToNumber(Number(item.unitPrice))}</Text>
+            <Pressable
+                onPress={() => addItemToCart(item)}
+                style={styles.cartBtn}>
                 <Text style={styles.cartBtnLbl}>Add to cart</Text>
             </Pressable>
         </View>
@@ -44,62 +49,60 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-          <View style={styles.viewCart}>
-            <View>
-                <Text style={styles.greetings}>Good Day, Jette</Text>
+            <View style={styles.viewCart}>
+                <View>
+                    <Text style={styles.greetings}>Good Day, Jette</Text>
+                </View>
+                <Pressable
+                    style={styles.cartBtn}
+                    onPress={gotoCartScreen}
+                >
+                    <Text>View cart : {CartData.length}</Text>
+                </Pressable>
             </View>
-          <Pressable
-          style={styles.cartBtn}
-            onPress={gotoCartScreen}
-            >
-                <Text>View cart : {CartData.length}</Text>
-            </Pressable>
-          </View>
             <View>
                 <TextInput
-                    value={searchProduct}
+                    value={searchProductName}
                     style={styles.searchInput}
                     placeholder='Search product'
-                    onChangeText={(text) => setSearchProduct(text)}
+                    onChangeText={(text) => setSearchProductName(text)}
                 />
             </View>
             {/* categories */}
             <View>
-                <Text style={{fontWeight:'bold', marginVertical :10}}>Categories</Text>
+                <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>Categories</Text>
                 <ScrollView
                     horizontal
                 >
-                    {ProductCategory.map((cat, index) => {
+                    {ProductCategory.map((cat: string, index) => {
+                        const selected = selectedCategories.includes(cat)
                         return (
-                            <View key={index} style={[styles.categorySelection, {backgroundColor: '#E8E8E8'}]}>
-                                <Text>{cat}</Text>
-                            </View>
+                            <Pressable
+                                onPress={() => toggleCategory(cat)}
+                                key={index}
+                                style={[styles.categorySelection, { backgroundColor: selected ? 'maroon' : '#E8E8E8' }]}>
+                                <Text style={{ color: selected ? '#ffff' : 'gray' }}>{cat}</Text>
+                            </Pressable>
                         )
                     })}
                 </ScrollView>
             </View>
 
-            <Pressable style={{
-                padding:10,
-                flexDirection:'row',
-                justifyContent:'space-between'
-            }}>
+            <Pressable style={styles.priceFilter}>
                 <Text style={{
-                    fontWeight:'bold'
+                    fontWeight: 'bold'
                 }}>Filter by Price</Text>
-                <View style={{
-                    backgroundColor:'orange',
-                    padding:5,
-                    borderRadius:5
-                }}>
-                    <Text style={{color : '#ffff'}}>Ascending</Text>
-                </View>
+                <Pressable
+                    onPress={() => setSortByPrice(!isAscSortByPrice)}
+                    style={styles.priceFilterCta}>
+                    <Text style={{ color: '#ffff' }}>{isAscSortByPrice ? 'Ascending' : 'Descending'}</Text>
+                </Pressable>
             </Pressable>
 
             <View>
                 <FlatList
                     contentContainerStyle={styles.listContent}
-                    data={ProductData}
+                    data={filteredItems}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
                     numColumns={2}
@@ -118,14 +121,14 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#ffff'
     },
-    greetings :{ 
-        fontWeight:'bold',
-        fontSize:20
+    greetings: {
+        fontWeight: 'bold',
+        fontSize: 20
     },
-    viewCart :{
-        flexDirection:'row',
-        alignItems:'center',
-         justifyContent:'space-between'
+    viewCart: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     categorySelection: {
         margin: 5,
@@ -172,5 +175,15 @@ const styles = StyleSheet.create({
     },
     cartBtnLbl: {
         color: '#ffff'
+    },
+    priceFilter: {
+        padding: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    priceFilterCta: {
+        backgroundColor: 'orange',
+        padding: 5,
+        borderRadius: 5
     }
 })
